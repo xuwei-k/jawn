@@ -11,7 +11,18 @@ object Parser extends SupportParser[Json] {
       def jfalse() = Json.jFalse
       def jtrue() = Json.jTrue
       def jnum(s: String) = Json.jNumberOrNull(java.lang.Double.parseDouble(s))
-      def jint(s: String) = Json.jNumberOrNull(java.lang.Double.parseDouble(s))
+      def jint(s: String) = {
+        if(s.length <= 18){
+          Json.jNumber(JsonLong(java.lang.Long.parseLong(s)))
+        }else{
+          val n = BigDecimal(s)
+          if(n.isValidLong){
+            Json.jNumber(JsonLong(n.longValue()))
+          }else{
+            Json.jNumber(JsonBigDecimal(n))
+          }
+        }
+      }
       def jstring(s: String) = Json.jString(s)
 
       def singleContext() = new FContext[Json] {
