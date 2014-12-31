@@ -228,7 +228,7 @@ object AdHocBenchmarks {
       run("argonaut", path)(argonautParse)
       run("argonaut-jawn", path)(argonautJawnParse)
       run("spray", path)(sprayParse)
-      run("spray-scalastuff", path)(sprayScalastuffParse)
+//      run("spray-scalastuff", path)(sprayScalastuffParse)
       run("spray-jawn", path)(sprayJawnParse)
       run("jackson", path)(jacksonParse)
       run("gson", path)(gsonParse)
