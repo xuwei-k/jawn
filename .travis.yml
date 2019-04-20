@@ -3,6 +3,9 @@ dist: xenial
 group: stable
 
 language: scala
+scala:
+- 2.11.12
+- 2.12.8
 
 ## add the following jobs to the build matrix:
 matrix:
@@ -15,9 +18,13 @@ matrix:
       packages:
         - openjdk8
   - jdk: openjdk11
+  - scala: 2.13.0-RC1
+    script:
+    # TODO enable test
+    - sbt "++ ${TRAVIS_SCALA_VERSION}" "all argonaut/compile ast/compile json4s/compile parser/compile play/compile util/compile"
 
 script:
-  - sbt "+ test"
+  - sbt "++ ${TRAVIS_SCALA_VERSION}" test
 
 before_cache:
   - find $HOME/.ivy2/cache -name "ivydata-*.properties" -delete

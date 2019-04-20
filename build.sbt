@@ -4,7 +4,7 @@ lazy val previousJawnVersion = "0.14.0"
 
 lazy val scala211 = "2.11.12"
 lazy val scala212 = "2.12.8"
-lazy val scala213 = "2.13.0-M5"
+lazy val scala213 = "2.13.0-RC1"
 ThisBuild / scalaVersion := scala212
 ThisBuild / organization := "org.typelevel"
 ThisBuild / licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
@@ -44,8 +44,17 @@ lazy val jawnSettings = Seq(
 
   libraryDependencies ++=
     "org.scalacheck" %% "scalacheck" % "1.14.0" % Test ::
-    "org.spire-math" %% "claimant" % "0.0.4" % Test ::
     Nil,
+
+  libraryDependencies ++= {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, v)) if v <= 12 =>
+        Seq("org.spire-math" %% "claimant" % "0.0.4" % Test)
+      case _ =>
+        // TODO claimant for Scala 2.13
+        Nil
+    }
+  },
 
   scalacOptions ++=
     "-deprecation" ::
@@ -53,8 +62,16 @@ lazy val jawnSettings = Seq(
     "-feature" ::
     "-unchecked" ::
     "-Xfatal-warnings" ::
-    "-Xfuture" ::
     Nil,
+
+  scalacOptions ++= {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, v)) if v <= 12 =>
+        Seq("-Xfuture")
+      case _ =>
+        Nil
+    }
+  },
 
   scalacOptions += {
     CrossVersion.partialVersion(scalaVersion.value) match {
@@ -139,7 +156,7 @@ def support(s: String) =
     .disablePlugins(JmhPlugin)
 
 lazy val supportArgonaut = support("argonaut")
-  .settings(crossScalaVersions := stableCrossVersions)
+  .settings(crossScalaVersions := allCrossVersions)
   .settings(libraryDependencies += "io.argonaut" %% "argonaut" % "6.2.3")
 
 lazy val supportJson4s = support("json4s")
@@ -149,7 +166,7 @@ lazy val supportJson4s = support("json4s")
 
 lazy val supportPlay = support("play")
   .settings(crossScalaVersions := allCrossVersions)
-  .settings(libraryDependencies += "com.typesafe.play" %% "play-json" % "2.7.2")
+  .settings(libraryDependencies += "com.typesafe.play" %% "play-json" % "2.7.3")
 
 lazy val supportRojoma = support("rojoma")
   .settings(crossScalaVersions := stableCrossVersions)
@@ -160,7 +177,7 @@ lazy val supportRojomaV3 = support("rojoma-v3")
   .settings(libraryDependencies += "com.rojoma" %% "rojoma-json-v3" % "3.9.1")
 
 lazy val supportSpray = support("spray")
-  .settings(crossScalaVersions := allCrossVersions)
+  .settings(crossScalaVersions := stableCrossVersions)
   .settings(libraryDependencies += "io.spray" %% "spray-json" % "1.3.5")
 
 lazy val benchmark = project.in(file("benchmark"))
